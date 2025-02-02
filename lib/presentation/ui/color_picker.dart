@@ -16,6 +16,9 @@ class CircleColorPickerController extends ChangeNotifier {
     _color = color;
     notifyListeners();
   }
+
+  final text_16 = TextEditingController();
+  set text16(String e) {}
 }
 
 class CircleColorPicker extends StatefulWidget {
