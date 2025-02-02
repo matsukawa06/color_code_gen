@@ -23,9 +23,9 @@ class CircleColorPicker extends StatefulWidget {
     super.key,
     this.onChanged,
     this.onEnded,
-    this.size = const Size(280, 280),
-    this.strokeWidth = 2,
-    this.thumbSize = 32,
+    this.size = const Size(300, 300),
+    this.strokeWidth = 8,
+    this.thumbSize = 40,
     this.controller,
     this.textStyle = const TextStyle(
       fontSize: 24,
@@ -35,47 +35,39 @@ class CircleColorPicker extends StatefulWidget {
     this.colorCodeBuilder,
   });
 
-  /// Called during a drag when the user is selecting a color.
-  ///
-  /// This callback called with latest color that user selected.
+  /// ユーザーが色を選択しているとき（ドラッグ中）に呼び出される
+  /// このコールバックは、ユーザーが選択した最新の色で呼び出される
   final ValueChanged<Color>? onChanged;
 
-  /// Called when drag ended.
-  ///
-  /// This callback called with latest color that user selected.
+  /// ドラッグが終了したときに呼び出される
+  /// このコールバックは、ユーザーが選択した最新の色で呼び出される
   final ValueChanged<Color>? onEnded;
 
-  /// An object to controll picker color dynamically.
-  ///
-  /// Provide initialColor if needed.
+  /// ピッカーの色を動的に制御するオブジェクト
+  /// 必要に応じて、initialColorを指定します
   final CircleColorPickerController? controller;
 
-  /// The size of widget.
-  /// Draggable area is thumb widget is included to the size,
-  /// so circle is smaller than the size.
-  ///
+  /// ウィジェットのサイズ
+  /// ドラッグ可能な領域には、親指ウィジェットが含まれるため
+  /// 円はサイズより小さくなります
   /// Default value is 280 x 280.
   final Size size;
 
-  /// The width of circle border.
-  ///
+  /// 円の枠線の幅
   /// Default value is 2.
   final double strokeWidth;
 
-  /// The size of thumb for circle picker.
-  ///
+  /// サークルピッカーの親指サイズ
   /// Default value is 32.
   final double thumbSize;
 
-  /// Text style config
-  ///
+  /// テキストスタイの設定
   /// Default value is Black
   final TextStyle textStyle;
 
-  /// Widget builder that show color code section.
-  /// This functions is called every time color changed.
-  ///
-  /// Default is Text widget that shows rgb strings;
+  /// カラーコードセクションを表示するウィジェットビルダー
+  /// この関数は色が変更されるたびに呼び出される
+  /// デフォルトは、RGB文字列を表示するテキストウィジェット
   final ColorCodeBuilder? colorCodeBuilder;
 
   Color get initialColor => controller?.color ?? const Color.fromARGB(255, 255, 0, 0);
@@ -85,6 +77,7 @@ class CircleColorPicker extends StatefulWidget {
   double get initialHue => HSLColor.fromColor(initialColor).hue;
 
   @override
+  // ignore: library_private_types_in_public_api
   _CircleColorPickerState createState() => _CircleColorPickerState();
 }
 
@@ -108,6 +101,7 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
       height: widget.size.height,
       child: Stack(
         children: <Widget>[
+          // カラー円の表示
           _HuePicker(
             hue: _hueController.value,
             size: widget.size,
@@ -118,6 +112,7 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
               _hueController.value = hue;
             },
           ),
+          // カラー円の内側の表示
           AnimatedBuilder(
             animation: _hueController,
             builder: (context, child) {
@@ -128,6 +123,7 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
+                        // 選択中の色を、カラーコード(16進数)で表示
                         widget.colorCodeBuilder != null
                             ? widget.colorCodeBuilder!(context, _color)
                             : Text(
@@ -135,6 +131,7 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
                                 style: widget.textStyle,
                               ),
                         const SizedBox(height: 16),
+                        // 選択中の色を、中心に「◯」で表示
                         Container(
                           width: 64,
                           height: 64,
@@ -152,6 +149,7 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
                           ),
                         ),
                         const SizedBox(height: 16),
+                        // 明るさのスライダーを表示
                         _LightnessSlider(
                           width: 140,
                           thumbSize: 26,
@@ -336,7 +334,7 @@ class _LightnessSliderState extends State<_LightnessSlider> with TickerProviderS
   }
 
   void _onCancel() {
-    // ScaleDown Animation cancelled if onDragStart called immediately
+    // onDragStartがすぐに呼び出された場合、ScaleDownアニメーションはキャンセルされる
     _cancelTimer = Timer(
       const Duration(milliseconds: 5),
       () {
@@ -459,7 +457,7 @@ class _HuePickerState extends State<_HuePicker> with TickerProviderStateMixin {
   }
 
   void _onCancel() {
-    // ScaleDown Animation cancelled if onDragStart called immediately
+    // onDragStartがすぐに呼び出された場合、ScaleDownアニメーションはキャンセルされる
     _cancelTimer = Timer(
       const Duration(milliseconds: 5),
       () {
