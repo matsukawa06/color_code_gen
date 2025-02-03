@@ -56,43 +56,80 @@ class _HomePageState extends State<HomePage> {
   Card colorCode() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.only(top: 6, bottom: 6),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            const SizedBox(width: 5),
             const Text(
               '16進',
-              style: TextStyle(fontSize: 22),
+              style: TextStyle(fontSize: 18),
             ),
-            SizedBox(
-              width: 110,
-              // height: 55,
-              child: TextFormField(
-                controller: _controller.text_16,
-                enableInteractiveSelection: true, // コピペ有効
-                enabled: true,
-                obscureText: false,
-                maxLength: 6,
-                maxLines: 1,
-                style: const TextStyle(fontSize: 22),
-                decoration: const InputDecoration(
-                  border: InputBorder.none, // 入力エリアの下線を非表示
-                  // hintText: 'リスト名',
-                  filled: true, // 背景色を表示する
-                ),
-                onChanged: _handleText,
-              ),
+            const SizedBox(width: 5),
+            textBox_16(),
+            const SizedBox(width: 10),
+            const Text(
+              'RGB',
+              style: TextStyle(fontSize: 18),
             ),
-            const Text('RGB'),
+            const SizedBox(width: 5),
+            textBoxRgb(_controller.textR),
+            const SizedBox(width: 2),
+            textBoxRgb(_controller.textG),
+            const SizedBox(width: 2),
+            textBoxRgb(_controller.textB),
           ],
         ),
       ),
     );
   }
 
-  void _handleText(String e) {
-    setState(() {
-      _controller.text16 = e;
-    });
+  SizedBox textBoxRgb(TextEditingController text) {
+    return SizedBox(
+      width: 60,
+      child: TextFormField(
+        controller: text,
+        enableInteractiveSelection: true,
+        enabled: true,
+        obscureText: false,
+        maxLength: 3,
+        maxLines: 1,
+        style: const TextStyle(fontSize: 18),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          filled: true,
+          counterText: '',
+        ),
+        onChanged: (e) {
+          _controller.onChangedText(e);
+        },
+      ),
+    );
+  }
+
+  // 16進数のテキストボックス
+  SizedBox textBox_16() {
+    return SizedBox(
+      width: 94,
+      child: TextFormField(
+        controller: _controller.text_16,
+        enableInteractiveSelection: true, // コピペ有効
+        enabled: true,
+        obscureText: false,
+        maxLength: 6,
+        maxLines: 1,
+        style: const TextStyle(fontSize: 18),
+        decoration: const InputDecoration(
+          border: InputBorder.none, // 入力エリアの下線を非表示
+          // hintText: '000000',
+          filled: true, // 背景色を表示する
+          counterText: '', // 右下のカウンターを非表示
+        ),
+        onChanged: (e) {
+          _controller.onChangedText(e);
+        },
+      ),
+    );
   }
 
   //
