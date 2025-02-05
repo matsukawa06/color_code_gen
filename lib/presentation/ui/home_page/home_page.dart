@@ -1,3 +1,4 @@
+import 'package:color_code_gen/common/common_const.dart';
 import 'package:color_code_gen/presentation/ui/color_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   final _controller = CircleColorPickerController(
     initialColor: Colors.blue,
   );
+  String colorCodeTypeSelected = ColorCodeType.hex.name;
 
   @override
   Widget build(BuildContext context) {
@@ -60,24 +62,46 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(width: 5),
-            const Text(
-              '16進',
-              style: TextStyle(fontSize: 18),
+            const SizedBox(width: 20),
+            DropdownButton(
+              items: [
+                DropdownMenuItem(
+                  value: ColorCodeType.hex.name,
+                  child: const Text(
+                    'HEX',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                DropdownMenuItem(
+                  value: ColorCodeType.rgb.name,
+                  child: const Text(
+                    'RGB',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ],
+              value: colorCodeTypeSelected,
+              onChanged: (colorType) {
+                setState(() => colorCodeTypeSelected = colorType as String);
+              },
             ),
-            const SizedBox(width: 5),
-            textBox_16(),
             const SizedBox(width: 10),
-            const Text(
-              'RGB',
-              style: TextStyle(fontSize: 18),
+            Visibility(
+              visible: colorCodeTypeSelected == ColorCodeType.hex.name,
+              child: textBox_16(),
             ),
-            const SizedBox(width: 5),
-            textBoxRgb(_controller.textR),
-            const SizedBox(width: 2),
-            textBoxRgb(_controller.textG),
-            const SizedBox(width: 2),
-            textBoxRgb(_controller.textB),
+            Visibility(
+              visible: colorCodeTypeSelected == ColorCodeType.rgb.name,
+              child: Row(
+                children: [
+                  textBoxRgb(_controller.textR),
+                  const SizedBox(width: 8),
+                  textBoxRgb(_controller.textG),
+                  const SizedBox(width: 8),
+                  textBoxRgb(_controller.textB),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -86,7 +110,7 @@ class _HomePageState extends State<HomePage> {
 
   SizedBox textBoxRgb(TextEditingController text) {
     return SizedBox(
-      width: 60,
+      width: 70,
       child: TextFormField(
         controller: text,
         enableInteractiveSelection: true,
@@ -94,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         obscureText: false,
         maxLength: 3,
         maxLines: 1,
-        style: const TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 20),
         decoration: const InputDecoration(
           border: InputBorder.none,
           filled: true,
@@ -110,7 +134,7 @@ class _HomePageState extends State<HomePage> {
   // 16進数のテキストボックス
   SizedBox textBox_16() {
     return SizedBox(
-      width: 94,
+      width: 110,
       child: TextFormField(
         controller: _controller.text_16,
         enableInteractiveSelection: true, // コピペ有効
@@ -118,7 +142,7 @@ class _HomePageState extends State<HomePage> {
         obscureText: false,
         maxLength: 6,
         maxLines: 1,
-        style: const TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 20),
         decoration: const InputDecoration(
           border: InputBorder.none, // 入力エリアの下線を非表示
           // hintText: '000000',
