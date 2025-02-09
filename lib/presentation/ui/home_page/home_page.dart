@@ -1,6 +1,8 @@
 import 'package:color_code_gen/common/common_const.dart';
+import 'package:color_code_gen/presentation/controller/color_controller.dart';
 import 'package:color_code_gen/presentation/ui/color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +17,8 @@ class _HomePageState extends State<HomePage> {
   final _controller = CircleColorPickerController(
     initialColor: Colors.blue,
   );
-  String colorCodeTypeSelected = ColorCodeType.hex.name;
+  // ScrollControllerを初期化
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,28 +28,56 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: _currentColor,
           title: const Text('カラー検索'),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(height: 10),
-              // カラーコード指定
-              colorCode(),
-              const SizedBox(height: 16),
-              // 色円指定
-              Center(
-                child: CircleColorPicker(
-                  controller: _controller,
-                  onChanged: (color) {
-                    setState(() => _currentColor = color);
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 10),
+                  // カラーコード指定
+                  colorCode(),
+                  const SizedBox(height: 16),
+                  // 色円指定
+                  Center(
+                    child: CircleColorPicker(
+                      controller: _controller,
+                      onChanged: (color) {
+                        setState(() => _currentColor = color);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // 色直接指定
+                  colorDirect(),
+                  const SizedBox(height: 16),
+                  // 配色表示
+                  colorScheme(),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+            // トップへ戻るボタン
+            Visibility(
+              visible: 0 == 0, //_scrollController.offset > 0.0,
+              child: Positioned(
+                bottom: 35,
+                right: 20,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    // ボタンが押されたときにスクロール位置を一番上に戻す
+                    _scrollController.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
                   },
+                  child: const Icon(Icons.arrow_upward),
                 ),
               ),
-              const SizedBox(height: 16),
-              // 色直接指定
-              colorDirect(),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );
@@ -55,59 +86,65 @@ class _HomePageState extends State<HomePage> {
   //
   // カラーコード指定
   //
-  Card colorCode() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 6, bottom: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(width: 20),
-            DropdownButton(
-              items: [
-                DropdownMenuItem(
-                  value: ColorCodeType.hex.name,
-                  child: const Text(
-                    'HEX',
-                    style: TextStyle(fontSize: 20),
+  Widget colorCode() {
+    return Consumer(
+      builder: (context, ref, _) {
+        final colorCon = ref.watch(colorController);
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 6),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(width: 20),
+                DropdownButton(
+                  items: [
+                    DropdownMenuItem(
+                      value: ColorCodeType.hex.name,
+                      child: const Text('HEX', style: TextStyle(fontSize: 20)),
+                    ),
+                    DropdownMenuItem(
+                      value: ColorCodeType.rgb.name,
+                      child: const Text('RGB', style: TextStyle(fontSize: 20)),
+                    ),
+                  ],
+                  value: colorCon.colorCodeTypeSelected,
+                  onChanged: (colorType) {
+                    setState(() => colorCon.changeColorCodeType(colorType as String));
+                  },
+                ),
+                const SizedBox(width: 20),
+                Visibility(
+                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
+                  child: Row(
+                    children: [
+                      const Text('#', style: TextStyle(fontSize: 24)),
+                      const SizedBox(width: 8),
+                      textBox_16(),
+                    ],
                   ),
                 ),
-                DropdownMenuItem(
-                  value: ColorCodeType.rgb.name,
-                  child: const Text(
-                    'RGB',
-                    style: TextStyle(fontSize: 20),
+                Visibility(
+                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
+                  child: Row(
+                    children: [
+                      textBoxRgb(_controller.textR),
+                      const SizedBox(width: 8),
+                      textBoxRgb(_controller.textG),
+                      const SizedBox(width: 8),
+                      textBoxRgb(_controller.textB),
+                    ],
                   ),
                 ),
               ],
-              value: colorCodeTypeSelected,
-              onChanged: (colorType) {
-                setState(() => colorCodeTypeSelected = colorType as String);
-              },
             ),
-            const SizedBox(width: 10),
-            Visibility(
-              visible: colorCodeTypeSelected == ColorCodeType.hex.name,
-              child: textBox_16(),
-            ),
-            Visibility(
-              visible: colorCodeTypeSelected == ColorCodeType.rgb.name,
-              child: Row(
-                children: [
-                  textBoxRgb(_controller.textR),
-                  const SizedBox(width: 8),
-                  textBoxRgb(_controller.textG),
-                  const SizedBox(width: 8),
-                  textBoxRgb(_controller.textB),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
+  // RGBのテキストボックス
   SizedBox textBoxRgb(TextEditingController text) {
     return SizedBox(
       width: 70,
@@ -125,7 +162,7 @@ class _HomePageState extends State<HomePage> {
           counterText: '',
         ),
         onChanged: (e) {
-          _controller.onChangedText(e);
+          _controller.onChangedTextRGB(e);
         },
       ),
     );
@@ -150,7 +187,7 @@ class _HomePageState extends State<HomePage> {
           counterText: '', // 右下のカウンターを非表示
         ),
         onChanged: (e) {
-          _controller.onChangedText(e);
+          _controller.onChangedText16(e);
         },
       ),
     );
@@ -200,5 +237,71 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(color: pColor),
       ),
     );
+  }
+
+  // 配色表示
+  Widget colorScheme() {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 20),
+      child: Table(
+        border: TableBorder.all(color: Colors.orange),
+        columnWidths: const <int, TableColumnWidth>{
+          0: FlexColumnWidth(4), // 1列目の幅
+          1: FlexColumnWidth(6), // 2列目の幅
+        },
+        children: <TableRow>[
+          commonTableRow('補色', ColorSchemType.hoshoku),
+          commonTableRow('トライアド', ColorSchemType.toraiado),
+          commonTableRow('スプリメット・コンプリメンタリ', ColorSchemType.supuritto),
+          commonTableRow('類似色', ColorSchemType.ruiji),
+          commonTableRow('ヒュー・チント・シェード', ColorSchemType.hyuchinto),
+        ],
+      ),
+    );
+  }
+
+  // 配色の行部分
+  TableRow commonTableRow(String name, ColorSchemType type) {
+    return TableRow(
+      children: <Widget>[
+        SizedBox(
+          height: 100,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(name, style: const TextStyle(fontSize: 20)),
+            ),
+          ),
+        ),
+        // 実際の配色を表示する部分
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(color: _controller.color),
+              ),
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(color: colorSchem1),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  MaterialColor get colorSchem1 => Colors.red;
+
+  // メモリリークを防ぐため、ScrollControllerを破棄する
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

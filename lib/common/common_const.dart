@@ -3,3 +3,11 @@ enum ColorCodeType {
   rgb,
   ;
 }
+
+enum ColorSchemType {
+  hoshoku,
+  toraiado,
+  supuritto,
+  ruiji,
+  hyuchinto,
+}

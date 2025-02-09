@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:color_code_gen/common/common_const.dart';
+import 'package:color_code_gen/presentation/controller/color_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ColorCodeBuilder = Widget Function(BuildContext context, Color color);
 
@@ -19,14 +22,17 @@ class CircleColorPickerController extends ChangeNotifier {
 
   final text_16 = TextEditingController();
   final textR = TextEditingController();
-  // set textR(String e) {}
   final textG = TextEditingController();
-  // set textG(String e) {}
   final textB = TextEditingController();
-  // set textB(String e) {}
 
-  onChangedText(String text) {
+  onChangedText16(String text) {
+    // カラー指定タイプが16進数の場合
+    if (text.length < 6) return;
     notifyListeners();
+  }
+
+  onChangedTextRGB(String text) {
+    // カラー指定タイプがRGBの場合
   }
 }
 
@@ -106,6 +112,7 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
     ).toColor();
   }
 
+  // カラー円と、カラー円の内側の表示
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -125,63 +132,88 @@ class _CircleColorPickerState extends State<CircleColorPicker> with TickerProvid
             },
           ),
           // カラー円の内側の表示
-          AnimatedBuilder(
-            animation: _hueController,
-            builder: (context, child) {
-              return AnimatedBuilder(
-                animation: _lightnessController,
-                builder: (context, _) {
-                  return Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        // 選択中の色を、カラーコード(16進数)で表示
-                        widget.colorCodeBuilder != null
-                            ? widget.colorCodeBuilder!(context, _color)
-                            : Text(
-                                '#${_color.value.toRadixString(16).substring(2)}',
-                                style: widget.textStyle,
-                              ),
-                        const SizedBox(height: 16),
-                        // 選択中の色を、中心に「◯」で表示
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(
-                            color: _color,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 3,
-                              color: HSLColor.fromColor(_color)
-                                  .withLightness(
-                                    _lightnessController.value * 4 / 5,
-                                  )
-                                  .toColor(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        // 明るさのスライダーを表示
-                        _LightnessSlider(
-                          width: 140,
-                          thumbSize: 26,
-                          hue: _hueController.value,
-                          lightness: _lightnessController.value,
-                          onEnded: _onEnded,
-                          onChanged: (lightness) {
-                            _lightnessController.value = lightness;
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+          insideColorCircle(),
         ],
       ),
     );
+  }
+
+  // カラー円の内側の表示
+  AnimatedBuilder insideColorCircle() {
+    return AnimatedBuilder(
+      animation: _hueController,
+      builder: (context, child) {
+        return Consumer(
+          builder: (context, ref, _) {
+            return AnimatedBuilder(
+              animation: _lightnessController,
+              builder: (context, _) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      // 選択中の色を、カラーコード(16進数)で表示
+                      widget.colorCodeBuilder != null
+                          ? widget.colorCodeBuilder!(context, _color)
+                          : Text(
+                              getColorCode(ref),
+                              style: widget.textStyle,
+                            ),
+                      const SizedBox(height: 16),
+                      // 選択中の色を、中心に「◯」で表示
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: _color,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            width: 3,
+                            color: HSLColor.fromColor(_color)
+                                .withLightness(
+                                  _lightnessController.value * 4 / 5,
+                                )
+                                .toColor(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // 明るさのスライダーを表示
+                      _LightnessSlider(
+                        width: 140,
+                        thumbSize: 26,
+                        hue: _hueController.value,
+                        lightness: _lightnessController.value,
+                        onEnded: _onEnded,
+                        onChanged: (lightness) {
+                          _lightnessController.value = lightness;
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // カラーコードタイプのカラーコードを返却する
+  String getColorCode(WidgetRef ref) {
+    final colorCon = ref.watch(colorController);
+    String ret;
+
+    if (colorCon.colorCodeTypeSelected == ColorCodeType.hex.name) {
+      // 16進数の場合
+      ret = '#${_color.value.toRadixString(16).substring(2)}';
+    } else {
+      // RGBの場合
+      ret = '${_color.red}, ${_color.green}, ${_color.blue}';
+    }
+    // カラーコードを返却
+    return ret;
   }
 
   @override
