@@ -97,6 +97,7 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(width: 20),
+                // カラー指定タイプを選択するためのプルダウンリスト
                 DropdownButton(
                   items: [
                     DropdownMenuItem(
