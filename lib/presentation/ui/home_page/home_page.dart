@@ -111,12 +111,14 @@ class _HomePageState extends State<HomePage> {
                   ],
                   value: colorCon.colorCodeTypeSelected,
                   onChanged: (colorType) {
-                    setState(() => colorCon.changeColorCodeType(colorType as String));
+                    setState(() =>
+                        colorCon.changeColorCodeType(colorType as String));
                   },
                 ),
                 const SizedBox(width: 20),
                 Visibility(
-                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
+                  visible:
+                      colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
                   child: Row(
                     children: [
                       const Text('#', style: TextStyle(fontSize: 24)),
@@ -126,7 +128,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Visibility(
-                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
+                  visible:
+                      colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
                   child: Row(
                     children: [
                       textBoxRgb(_controller.textR),
@@ -280,11 +283,13 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
+              // 選択中の色
               Container(
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(color: _controller.color),
               ),
+              // 選択中の色に対する配色
               Container(
                 width: 50,
                 height: 50,
