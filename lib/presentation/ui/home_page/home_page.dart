@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 10),
                   // カラーコード指定
                   colorCode(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   // 色円指定
                   Center(
                     child: CircleColorPicker(
@@ -50,10 +50,10 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   // 色直接指定
                   colorDirect(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   // 配色表示
                   colorScheme(),
                   const SizedBox(height: 100),
@@ -122,14 +122,12 @@ class _HomePageState extends State<HomePage> {
                   ],
                   value: colorCon.colorCodeTypeSelected,
                   onChanged: (colorType) {
-                    setState(() =>
-                        colorCon.changeColorCodeType(colorType as String));
+                    setState(() => colorCon.changeColorCodeType(colorType as String));
                   },
                 ),
                 const SizedBox(width: 20),
                 Visibility(
-                  visible:
-                      colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
+                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
                   child: Row(
                     children: [
                       const Text('#', style: TextStyle(fontSize: 24)),
@@ -139,8 +137,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Visibility(
-                  visible:
-                      colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
+                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
                   child: Row(
                     children: [
                       textBoxRgb(_controller.textR),
@@ -276,6 +273,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // 配色Container同士のスペースサイズ
+  double schemContainerSpaceWidth = 15;
+
   // 配色の行部分
   TableRow commonTableRow(String name, ColorSchemType type) {
     return TableRow(
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               // 選択中の色
               colorSchemContainer(_controller.color),
-              const SizedBox(width: 20),
+              SizedBox(width: schemContainerSpaceWidth),
               // 選択中の色に対する配色
               colorSchemRow(type),
             ],
@@ -311,7 +311,7 @@ class _HomePageState extends State<HomePage> {
   Container colorSchemContainer(Color pColor) {
     return Container(
       width: 50,
-      height: 50,
+      height: 80,
       decoration: BoxDecoration(color: pColor),
     );
   }
@@ -320,11 +320,7 @@ class _HomePageState extends State<HomePage> {
   // colorSchemTypeによって、返却するContainer数が異なる
   Row colorSchemRow(ColorSchemType type) {
     // 選択中カラーのRGB配列作成
-    List<int> aryRgb = [
-      _controller.color.red,
-      _controller.color.green,
-      _controller.color.blue
-    ];
+    List<int> aryRgb = [_controller.color.red, _controller.color.green, _controller.color.blue];
     switch (type) {
       case ColorSchemType.hanten:
         //==============================
@@ -356,7 +352,7 @@ class _HomePageState extends State<HomePage> {
         return Row(
           children: [
             colorSchemContainer(triadicColor[0]),
-            const SizedBox(width: 20),
+            SizedBox(width: schemContainerSpaceWidth),
             colorSchemContainer(triadicColor[1]),
           ],
         );
@@ -370,8 +366,36 @@ class _HomePageState extends State<HomePage> {
         return Row(
           children: [
             colorSchemContainer(splitColor[0]),
-            const SizedBox(width: 20),
+            SizedBox(width: schemContainerSpaceWidth),
             colorSchemContainer(splitColor[1]),
+          ],
+        );
+      case ColorSchemType.ruiji:
+        //==============================
+        // 類似色
+        //==============================
+        // 類似色計算処理
+        List<Color> analogousColor = colorAnalogousRgb(aryRgb);
+        // 画面表示
+        return Row(
+          children: [
+            colorSchemContainer(analogousColor[0]),
+            SizedBox(width: schemContainerSpaceWidth),
+            colorSchemContainer(analogousColor[1]),
+          ],
+        );
+      case ColorSchemType.hueTint:
+        //==============================
+        // ヒュー・チント・シェード
+        //==============================
+        // ヒュー・チント・シェード計算処理
+        List<Color> hueTintShadeColor = colorHueTintShadeRgb(aryRgb);
+        // 画面表示
+        return Row(
+          children: [
+            colorSchemContainer(hueTintShadeColor[0]),
+            SizedBox(width: schemContainerSpaceWidth),
+            colorSchemContainer(hueTintShadeColor[1]),
           ],
         );
       default:
@@ -464,15 +488,9 @@ class _HomePageState extends State<HomePage> {
     List<num> hsv = [0, 0, maxNum];
     if (maxNum != minNum) {
       // H（色相）
-      if (maxNum == r) {
-        hsv[0] = 60 * (g - b) / (maxNum - minNum);
-      }
-      if (maxNum == g) {
-        hsv[0] = 60 * (b - r) / (maxNum - minNum) + 120;
-      }
-      if (maxNum == b) {
-        hsv[0] = 60 * (r - b) / (maxNum - minNum) + 240;
-      }
+      if (maxNum == r) hsv[0] = 60 * (g - b) / (maxNum - minNum);
+      if (maxNum == g) hsv[0] = 60 * (b - r) / (maxNum - minNum) + 120;
+      if (maxNum == b) hsv[0] = 60 * (r - g) / (maxNum - minNum) + 240;
 
       // S（彩度）
       hsv[1] = (maxNum - minNum) / maxNum;
@@ -480,7 +498,7 @@ class _HomePageState extends State<HomePage> {
 
     hsv[0] = hsv[0].round();
     hsv[1] = (hsv[1] * 100).round();
-    hsv[2] = (hsv[2] / 255).round();
+    hsv[2] = ((hsv[2] / 255) * 100).round();
 
     return hsv;
   }
@@ -551,5 +569,43 @@ class _HomePageState extends State<HomePage> {
     if (hue >= 360) return hue - 360;
     if (hue < 0) return 360 + hue;
     return hue;
+  }
+
+  //--------------------------------------
+  // 類似色計算処理
+  //--------------------------------------
+  List<Color> colorAnalogousRgb(List<int> aryRgb) {
+    List<num> hsv = rgb2hsv(aryRgb);
+    num h = hsv[0];
+    num h0 = h + 30;
+    num h1 = h - 30;
+
+    //hsv2rgb:HSV色空間からRGB色空間へ変換する
+    List<num> rgb1 = hsv2rgb(h0, hsv[1], hsv[2]);
+    List<num> rgb2 = hsv2rgb(h1, hsv[1], hsv[2]);
+
+    return [
+      Color.fromRGBO(rgb1[0] as int, rgb1[1] as int, rgb1[2] as int, 1),
+      Color.fromRGBO(rgb2[0] as int, rgb2[1] as int, rgb2[2] as int, 1),
+    ];
+  }
+
+  //--------------------------------------
+  // ヒュー・チント・シェード計算処理
+  //--------------------------------------
+  List<Color> colorHueTintShadeRgb(List<int> aryRgb) {
+    List<int> rgb = [aryRgb[0], aryRgb[1], aryRgb[2]];
+
+    List<int> Rs = [(rgb[0] * 3 / 5).floor(), (rgb[0] + ((255 - rgb[0]) * 4 / 5)).floor()];
+    List<int> Gs = [(rgb[1] * 3 / 5).floor(), (rgb[1] + ((255 - rgb[1]) * 4 / 5)).floor()];
+    List<int> Bs = [(rgb[2] * 3 / 5).floor(), (rgb[2] + ((255 - rgb[2]) * 4 / 5)).floor()];
+
+    List<int> rgb1 = [Rs[0], Gs[0], Bs[0]];
+    List<int> rgb2 = [Rs[1], Gs[1], Bs[1]];
+
+    return [
+      Color.fromRGBO(rgb1[0], rgb1[1], rgb1[2], 1),
+      Color.fromRGBO(rgb2[0], rgb2[1], rgb2[2], 1),
+    ];
   }
 }
