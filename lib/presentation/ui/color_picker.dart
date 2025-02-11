@@ -28,6 +28,14 @@ class CircleColorPickerController extends ChangeNotifier {
   onChangedText16(String text) {
     // カラー指定タイプが16進数の場合
     if (text.length < 6) return;
+    // 16進数で色指定する場合、8桁必要
+    String hex = text;
+    // intに変換してみる（16進数で使用できない文字が含まれている場合0を返す）
+    int colorValue = int.tryParse(hex, radix: 16) ?? 0;
+    // 変換に失敗したら処理終了
+    if (colorValue == 0) return;
+    // 変換できたら選択中の色を変更する
+    _color = Color(colorValue);
     notifyListeners();
   }
 

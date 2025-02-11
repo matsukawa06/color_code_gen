@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
         ),
         body: Stack(
           children: [
+            // メインコンテンツ
             SingleChildScrollView(
               controller: _scrollController,
               child: Column(
@@ -42,13 +43,20 @@ class _HomePageState extends State<HomePage> {
                   colorCode(),
                   const SizedBox(height: 12),
                   // 色円指定
-                  Center(
-                    child: CircleColorPicker(
-                      controller: _controller,
-                      onChanged: (color) {
-                        setState(() => _currentColor = color);
-                      },
-                    ),
+                  Stack(
+                    children: [
+                      // お気に入りボタン
+                      favaritIcon(),
+                      // 色円指定
+                      Center(
+                        child: CircleColorPicker(
+                          controller: _controller,
+                          onChanged: (color) {
+                            setState(() => _currentColor = color);
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   // 色直接指定
@@ -81,7 +89,56 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: '検索',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.heart_broken),
+              label: 'お気に入り',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: '設定',
+            )
+          ],
+        ),
       ),
+    );
+  }
+
+  // お気に入りボタン
+  Widget favaritIcon() {
+    return Consumer(
+      builder: (context, ref, _) {
+        final colorCon = ref.watch(colorController);
+        return Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Column(
+              children: [
+                const Text(
+                  'お気に入り',
+                  style: TextStyle(fontSize: 12),
+                ),
+                IconButton(
+                  onPressed: () {
+                    colorCon.changeFavorit();
+                  },
+                  isSelected: colorCon.isFavorit,
+                  selectedIcon: const Icon(Icons.favorite),
+                  icon: const Icon(Icons.favorite_border),
+                  iconSize: 40,
+                  color: Colors.red,
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -282,28 +339,94 @@ class _HomePageState extends State<HomePage> {
       children: <Widget>[
         SizedBox(
           height: 100,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(name, style: const TextStyle(fontSize: 20)),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () {
+                // 配色のタイプの説明ダイアログを表示
+                colorSchemTypeExplanation(type);
+              },
+              child: Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.blue,
+                ),
+              ),
             ),
           ),
         ),
         // 実際の配色を表示する部分
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              // 選択中の色
-              colorSchemContainer(_controller.color),
-              SizedBox(width: schemContainerSpaceWidth),
-              // 選択中の色に対する配色
-              colorSchemRow(type),
-            ],
+        SizedBox(
+          height: 100,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Row(
+                children: [
+                  // 選択中の色
+                  colorSchemContainer(_controller.color),
+                  SizedBox(width: schemContainerSpaceWidth),
+                  // 選択中の色に対する配色
+                  colorSchemRow(type),
+                ],
+              ),
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  // 配色のタイプの説明ダイアログを表示
+  Future<dynamic> colorSchemTypeExplanation(ColorSchemType type) {
+    String title = '';
+    String content = '';
+    switch (type) {
+      case ColorSchemType.hanten:
+        title = '反転色';
+        break;
+      case ColorSchemType.hoshoku:
+        title = '補色';
+        content = '''色相環で真向かいの位置にある色が補色です。メインカラーに対して、補色をアクセントとして使用すると人目を引く効果が期待できます。''';
+        break;
+      case ColorSchemType.triad:
+        title = 'トライアド';
+        content = '''色相環で等しい距離にある３つの色の組み合わせです。バランスが良く、安定感があります。''';
+        break;
+      case ColorSchemType.split:
+        title = 'スプリット・コンプリメンタリ';
+        break;
+      case ColorSchemType.ruiji:
+        title = '類似色';
+        break;
+      case ColorSchemType.hueTint:
+        title = 'ヒュー・チント・シェード';
+        break;
+      default:
+        title = '';
+      //設定なし
+    }
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext contex) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(contex).pop();
+              },
+              child: const Text('閉じる'),
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -311,7 +434,7 @@ class _HomePageState extends State<HomePage> {
   Container colorSchemContainer(Color pColor) {
     return Container(
       width: 50,
-      height: 80,
+      height: 60,
       decoration: BoxDecoration(color: pColor),
     );
   }

@@ -21,4 +21,12 @@ class ColorController extends ChangeNotifier {
     colorCodeTypeSelected = color;
     notifyListeners();
   }
+
+  // お気に入りフラグ
+  bool isFavorit = false;
+  // お気に入りフラグ変更
+  void changeFavorit() {
+    isFavorit = !isFavorit;
+    notifyListeners();
+  }
 }
