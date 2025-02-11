@@ -5,9 +5,10 @@ enum ColorCodeType {
 }
 
 enum ColorSchemType {
+  hanten,
   hoshoku,
-  toraiado,
-  supuritto,
+  triad,
+  split,
   ruiji,
-  hyuchinto,
+  hueTint,
 }
