@@ -17,6 +17,10 @@ class CircleColorPickerController extends ChangeNotifier {
   Color get color => _color;
   set color(Color color) {
     _color = color;
+    text_16.text = color.value.toRadixString(16).substring(2);
+    textR.text = color.red.toString();
+    textG.text = color.green.toString();
+    textB.text = color.blue.toString();
     notifyListeners();
   }
 
@@ -39,8 +43,20 @@ class CircleColorPickerController extends ChangeNotifier {
     notifyListeners();
   }
 
-  onChangedTextRGB(String text) {
+  onChangedTextRGB(String text, RGBType rgbType) {
+    if (text.isEmpty || textR.text.isEmpty || textG.text.isEmpty || textB.text.isEmpty) return;
     // カラー指定タイプがRGBの場合
+    switch (rgbType) {
+      case RGBType.r:
+        _color = Color.fromRGBO(int.parse(text), int.parse(textG.text), int.parse(textB.text), 1);
+      case RGBType.g:
+        _color = Color.fromRGBO(int.parse(textR.text), int.parse(text), int.parse(textB.text), 1);
+      case RGBType.b:
+        _color = Color.fromRGBO(int.parse(textR.text), int.parse(textG.text), int.parse(text), 1);
+      default:
+      // 処理なし
+    }
+    notifyListeners();
   }
 }
 

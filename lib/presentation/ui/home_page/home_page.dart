@@ -38,9 +38,12 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 2),
                   // カラーコード指定
                   colorCode(),
+                  const SizedBox(height: 2),
+                  // 色直接指定
+                  colorDirect(),
                   const SizedBox(height: 12),
                   // 色円指定
                   Stack(
@@ -58,35 +61,32 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  // 色直接指定
-                  colorDirect(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 9),
                   // 配色表示
                   colorScheme(),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 5),
                 ],
               ),
             ),
-            // トップへ戻るボタン
-            Visibility(
-              visible: 0 == 0, //_scrollController.offset > 0.0,
-              child: Positioned(
-                bottom: 35,
-                right: 20,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    // ボタンが押されたときにスクロール位置を一番上に戻す
-                    _scrollController.animateTo(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                  child: const Icon(Icons.arrow_upward),
-                ),
-              ),
-            )
+            // // トップへ戻るボタン
+            // Visibility(
+            //   visible: 0 == 0, //_scrollController.offset > 0.0,
+            //   child: Positioned(
+            //     bottom: 35,
+            //     right: 20,
+            //     child: FloatingActionButton(
+            //       onPressed: () {
+            //         // ボタンが押されたときにスクロール位置を一番上に戻す
+            //         _scrollController.animateTo(
+            //           0,
+            //           duration: const Duration(milliseconds: 300),
+            //           curve: Curves.easeInOut,
+            //         );
+            //       },
+            //       child: const Icon(Icons.arrow_upward),
+            //     ),
+            //   ),
+            // )
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> {
         final colorCon = ref.watch(colorController);
         return Card(
           child: Padding(
-            padding: const EdgeInsets.only(top: 6, bottom: 6),
+            padding: const EdgeInsets.only(top: 1, bottom: 1),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -170,11 +170,11 @@ class _HomePageState extends State<HomePage> {
                   items: [
                     DropdownMenuItem(
                       value: ColorCodeType.hex.name,
-                      child: const Text('HEX', style: TextStyle(fontSize: 20)),
+                      child: const Text('HEX'),
                     ),
                     DropdownMenuItem(
                       value: ColorCodeType.rgb.name,
-                      child: const Text('RGB', style: TextStyle(fontSize: 20)),
+                      child: const Text('RGB'),
                     ),
                   ],
                   value: colorCon.colorCodeTypeSelected,
@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                   visible: colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
                   child: Row(
                     children: [
-                      const Text('#', style: TextStyle(fontSize: 24)),
+                      const Text('#', style: TextStyle(fontSize: 20)),
                       const SizedBox(width: 8),
                       textBox_16(),
                     ],
@@ -197,11 +197,11 @@ class _HomePageState extends State<HomePage> {
                   visible: colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
                   child: Row(
                     children: [
-                      textBoxRgb(_controller.textR),
+                      textBoxRgb(_controller.textR, RGBType.r),
                       const SizedBox(width: 8),
-                      textBoxRgb(_controller.textG),
+                      textBoxRgb(_controller.textG, RGBType.g),
                       const SizedBox(width: 8),
-                      textBoxRgb(_controller.textB),
+                      textBoxRgb(_controller.textB, RGBType.b),
                     ],
                   ),
                 ),
@@ -214,9 +214,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   // RGBのテキストボックス
-  SizedBox textBoxRgb(TextEditingController text) {
+  SizedBox textBoxRgb(TextEditingController text, RGBType rgbType) {
     return SizedBox(
       width: 70,
+      height: 30,
       child: TextFormField(
         controller: text,
         enableInteractiveSelection: true,
@@ -224,14 +225,17 @@ class _HomePageState extends State<HomePage> {
         obscureText: false,
         maxLength: 3,
         maxLines: 1,
-        style: const TextStyle(fontSize: 20),
         decoration: const InputDecoration(
-          border: InputBorder.none,
-          filled: true,
+          border: OutlineInputBorder(),
+          filled: false,
           counterText: '',
+          contentPadding: EdgeInsets.only(left: 12),
+        ),
+        style: const TextStyle(
+          fontSize: 14,
         ),
         onChanged: (e) {
-          _controller.onChangedTextRGB(e);
+          _controller.onChangedTextRGB(e, rgbType);
         },
       ),
     );
@@ -241,6 +245,7 @@ class _HomePageState extends State<HomePage> {
   SizedBox textBox_16() {
     return SizedBox(
       width: 110,
+      height: 30,
       child: TextFormField(
         controller: _controller.text_16,
         enableInteractiveSelection: true, // コピペ有効
@@ -248,12 +253,14 @@ class _HomePageState extends State<HomePage> {
         obscureText: false,
         maxLength: 6,
         maxLines: 1,
-        style: const TextStyle(fontSize: 20),
         decoration: const InputDecoration(
-          border: InputBorder.none, // 入力エリアの下線を非表示
-          // hintText: '000000',
-          filled: true, // 背景色を表示する
+          border: OutlineInputBorder(),
+          filled: false, // 背景色を表示しない
           counterText: '', // 右下のカウンターを非表示
+          contentPadding: EdgeInsets.only(left: 12),
+        ),
+        style: const TextStyle(
+          fontSize: 14,
         ),
         onChanged: (e) {
           _controller.onChangedText16(e);
@@ -270,7 +277,7 @@ class _HomePageState extends State<HomePage> {
       width: 320,
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
           child: Wrap(
             spacing: 9,
             runSpacing: 6,
@@ -315,6 +322,100 @@ class _HomePageState extends State<HomePage> {
       child: Table(
         border: TableBorder.all(color: Colors.orange),
         columnWidths: const <int, TableColumnWidth>{
+          0: FlexColumnWidth(1.9), // 1列目の幅
+          1: FlexColumnWidth(3.1), // 2列目の幅
+          2: FlexColumnWidth(1.9), // 3列目の幅
+          3: FlexColumnWidth(3.1), // 4列目の幅
+        },
+        children: <TableRow>[
+          commonTableRow('反転色', ColorSchemeType.hanten, '補色', ColorSchemeType.hoshoku),
+          commonTableRow('トライアド', ColorSchemeType.triad, 'スプコン', ColorSchemeType.split),
+          commonTableRow('類似色', ColorSchemeType.ruiji, 'H.T.S', ColorSchemeType.hueTint),
+        ],
+      ),
+    );
+  }
+
+  // 配色Container同士のスペースサイズ
+  double schemContainerSpaceWidth = 5;
+
+  // 配色の行部分
+  TableRow commonTableRow(
+      String name1, ColorSchemeType type1, String name2, ColorSchemeType type2) {
+    return TableRow(
+      children: <Widget>[
+        // 配色のタイトル１
+        schemeTitle(type1, name1),
+        // 実際の配色を表示する部分
+        schemeColor(type1),
+        // 配色のタイトル2
+        schemeTitle(type2, name2),
+        // 実際の配色を表示する部分
+        schemeColor(type2),
+      ],
+    );
+  }
+
+  // 配色のタイトル部分
+  Align schemeTitle(ColorSchemeType type1, String name1) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton(
+        onPressed: () {
+          // 配色のタイプの説明ダイアログを表示
+          colorSchemTypeExplanation(type1);
+        },
+        child: Text(
+          name1,
+          style: const TextStyle(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
+            decorationColor: Colors.blue,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 実際の配色を表示する部分
+  Widget schemeColor(ColorSchemeType type1) {
+    return SizedBox(
+      height: 48,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: Row(
+            children: [
+              // 選択中の色
+              colorSchemContainer(_controller.color),
+              SizedBox(width: schemContainerSpaceWidth),
+              // 選択中の色に対する配色
+              colorSchemRow(type1),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 配色用の共通Container
+  Container colorSchemContainer(Color pColor) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(color: pColor),
+    );
+  }
+
+/*
+  // 配色表示
+  Widget colorScheme() {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 20),
+      child: Table(
+        border: TableBorder.all(color: Colors.orange),
+        columnWidths: const <int, TableColumnWidth>{
           0: FlexColumnWidth(4), // 1列目の幅
           1: FlexColumnWidth(6), // 2列目の幅
         },
@@ -349,7 +450,7 @@ class _HomePageState extends State<HomePage> {
               child: Text(
                 name,
                 style: const TextStyle(
-                  fontSize: 20,
+                  // fontSize: 20,
                   color: Colors.blue,
                   decoration: TextDecoration.underline,
                   decorationColor: Colors.blue,
@@ -380,30 +481,30 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
-
+*/
   // 配色のタイプの説明ダイアログを表示
-  Future<dynamic> colorSchemTypeExplanation(ColorSchemType type) {
+  Future<dynamic> colorSchemTypeExplanation(ColorSchemeType type) {
     String title = '';
     String content = '';
     switch (type) {
-      case ColorSchemType.hanten:
+      case ColorSchemeType.hanten:
         title = '反転色';
         break;
-      case ColorSchemType.hoshoku:
+      case ColorSchemeType.hoshoku:
         title = '補色';
         content = '''色相環で真向かいの位置にある色が補色です。メインカラーに対して、補色をアクセントとして使用すると人目を引く効果が期待できます。''';
         break;
-      case ColorSchemType.triad:
+      case ColorSchemeType.triad:
         title = 'トライアド';
         content = '''色相環で等しい距離にある３つの色の組み合わせです。バランスが良く、安定感があります。''';
         break;
-      case ColorSchemType.split:
+      case ColorSchemeType.split:
         title = 'スプリット・コンプリメンタリ';
         break;
-      case ColorSchemType.ruiji:
+      case ColorSchemeType.ruiji:
         title = '類似色';
         break;
-      case ColorSchemType.hueTint:
+      case ColorSchemeType.hueTint:
         title = 'ヒュー・チント・シェード';
         break;
       default:
@@ -430,6 +531,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+/*
   // 配色用の共通Container
   Container colorSchemContainer(Color pColor) {
     return Container(
@@ -438,14 +540,14 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(color: pColor),
     );
   }
-
+*/
   // 配色をRowで作成する
   // colorSchemTypeによって、返却するContainer数が異なる
-  Row colorSchemRow(ColorSchemType type) {
+  Row colorSchemRow(ColorSchemeType type) {
     // 選択中カラーのRGB配列作成
     List<int> aryRgb = [_controller.color.red, _controller.color.green, _controller.color.blue];
     switch (type) {
-      case ColorSchemType.hanten:
+      case ColorSchemeType.hanten:
         //==============================
         // 反転色
         //==============================
@@ -455,7 +557,7 @@ class _HomePageState extends State<HomePage> {
         return Row(
           children: [colorSchemContainer(col)],
         );
-      case ColorSchemType.hoshoku:
+      case ColorSchemeType.hoshoku:
         //==============================
         // 補色
         //==============================
@@ -465,7 +567,7 @@ class _HomePageState extends State<HomePage> {
         return Row(
           children: [colorSchemContainer(col)],
         );
-      case ColorSchemType.triad:
+      case ColorSchemeType.triad:
         //==============================
         // トライアド
         //==============================
@@ -479,7 +581,7 @@ class _HomePageState extends State<HomePage> {
             colorSchemContainer(triadicColor[1]),
           ],
         );
-      case ColorSchemType.split:
+      case ColorSchemeType.split:
         //==============================
         // スプリット・コンプリメンタリ
         //==============================
@@ -493,7 +595,7 @@ class _HomePageState extends State<HomePage> {
             colorSchemContainer(splitColor[1]),
           ],
         );
-      case ColorSchemType.ruiji:
+      case ColorSchemeType.ruiji:
         //==============================
         // 類似色
         //==============================
@@ -507,7 +609,7 @@ class _HomePageState extends State<HomePage> {
             colorSchemContainer(analogousColor[1]),
           ],
         );
-      case ColorSchemType.hueTint:
+      case ColorSchemeType.hueTint:
         //==============================
         // ヒュー・チント・シェード
         //==============================
@@ -594,8 +696,8 @@ class _HomePageState extends State<HomePage> {
     List<num> rgb2 = hsv2rgb(h1, hsv[1], hsv[2]);
 
     return [
-      Color.fromRGBO(rgb1[0] as int, rgb1[1] as int, rgb1[2] as int, 1),
-      Color.fromRGBO(rgb2[0] as int, rgb2[1] as int, rgb2[2] as int, 1),
+      Color.fromRGBO(rgb1[0].toInt(), rgb1[1].toInt(), rgb1[2].toInt(), 1),
+      Color.fromRGBO(rgb2[0].toInt(), rgb2[1].toInt(), rgb2[2].toInt(), 1),
     ];
   }
 
@@ -708,8 +810,8 @@ class _HomePageState extends State<HomePage> {
     List<num> rgb2 = hsv2rgb(h1, hsv[1], hsv[2]);
 
     return [
-      Color.fromRGBO(rgb1[0] as int, rgb1[1] as int, rgb1[2] as int, 1),
-      Color.fromRGBO(rgb2[0] as int, rgb2[1] as int, rgb2[2] as int, 1),
+      Color.fromRGBO(rgb1[0].toInt(), rgb1[1].toInt(), rgb1[2].toInt(), 1),
+      Color.fromRGBO(rgb2[0].toInt(), rgb2[1].toInt(), rgb2[2].toInt(), 1),
     ];
   }
 

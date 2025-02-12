@@ -4,11 +4,17 @@ enum ColorCodeType {
   ;
 }
 
-enum ColorSchemType {
+enum ColorSchemeType {
   hanten,
   hoshoku,
   triad,
   split,
   ruiji,
   hueTint,
+}
+
+enum RGBType {
+  r,
+  g,
+  b,
 }
