@@ -68,25 +68,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // // トップへ戻るボタン
-            // Visibility(
-            //   visible: 0 == 0, //_scrollController.offset > 0.0,
-            //   child: Positioned(
-            //     bottom: 35,
-            //     right: 20,
-            //     child: FloatingActionButton(
-            //       onPressed: () {
-            //         // ボタンが押されたときにスクロール位置を一番上に戻す
-            //         _scrollController.animateTo(
-            //           0,
-            //           duration: const Duration(milliseconds: 300),
-            //           curve: Curves.easeInOut,
-            //         );
-            //       },
-            //       child: const Icon(Icons.arrow_upward),
-            //     ),
-            //   ),
-            // )
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -96,7 +77,7 @@ class _HomePageState extends State<HomePage> {
               label: '検索',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.heart_broken),
+              icon: Icon(Icons.favorite),
               label: 'お気に入り',
             ),
             BottomNavigationBarItem(

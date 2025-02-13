@@ -33,32 +33,26 @@ class CircleColorPickerController extends ChangeNotifier {
     // カラー指定タイプが16進数の場合
     if (text.length < 6) return;
     // 16進数で色指定する場合、8桁必要
-    String hex = 'FF$text';
+    String hex = 'ff$text';
     // intに変換してみる（16進数で使用できない文字が含まれている場合0を返す）
     int colorValue = int.tryParse(hex, radix: 16) ?? 0;
     // 変換に失敗したら処理終了
     if (colorValue == 0) return;
     // 変換できたら選択中の色を変更する
-    _color = Color(colorValue);
+    color = Color(colorValue);
     notifyListeners();
   }
 
   onChangedTextRGB(String text, RGBType rgbType) {
-    if (text.isEmpty ||
-        textR.text.isEmpty ||
-        textG.text.isEmpty ||
-        textB.text.isEmpty) return;
+    if (text.isEmpty || textR.text.isEmpty || textG.text.isEmpty || textB.text.isEmpty) return;
     // カラー指定タイプがRGBの場合
     switch (rgbType) {
       case RGBType.r:
-        _color = Color.fromRGBO(
-            int.parse(text), int.parse(textG.text), int.parse(textB.text), 1);
+        _color = Color.fromRGBO(int.parse(text), int.parse(textG.text), int.parse(textB.text), 1);
       case RGBType.g:
-        _color = Color.fromRGBO(
-            int.parse(textR.text), int.parse(text), int.parse(textB.text), 1);
+        _color = Color.fromRGBO(int.parse(textR.text), int.parse(text), int.parse(textB.text), 1);
       case RGBType.b:
-        _color = Color.fromRGBO(
-            int.parse(textR.text), int.parse(textG.text), int.parse(text), 1);
+        _color = Color.fromRGBO(int.parse(textR.text), int.parse(textG.text), int.parse(text), 1);
       default:
       // 処理なし
     }
@@ -118,8 +112,7 @@ class CircleColorPicker extends StatefulWidget {
   /// デフォルトは、RGB文字列を表示するテキストウィジェット
   final ColorCodeBuilder? colorCodeBuilder;
 
-  Color get initialColor =>
-      controller?.color ?? const Color.fromARGB(255, 255, 0, 0);
+  Color get initialColor => controller?.color ?? const Color.fromARGB(255, 255, 0, 0);
 
   double get initialLightness => HSLColor.fromColor(initialColor).lightness;
 
@@ -130,8 +123,7 @@ class CircleColorPicker extends StatefulWidget {
   _CircleColorPickerState createState() => _CircleColorPickerState();
 }
 
-class _CircleColorPickerState extends State<CircleColorPicker>
-    with TickerProviderStateMixin {
+class _CircleColorPickerState extends State<CircleColorPicker> with TickerProviderStateMixin {
   late AnimationController _lightnessController;
   late AnimationController _hueController;
 
@@ -317,8 +309,7 @@ class _LightnessSlider extends StatefulWidget {
   _LightnessSliderState createState() => _LightnessSliderState();
 }
 
-class _LightnessSliderState extends State<_LightnessSlider>
-    with TickerProviderStateMixin {
+class _LightnessSliderState extends State<_LightnessSlider> with TickerProviderStateMixin {
   late AnimationController _scaleController;
   Timer? _cancelTimer;
 
