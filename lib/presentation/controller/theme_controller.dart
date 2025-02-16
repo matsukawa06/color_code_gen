@@ -13,7 +13,7 @@ final themeController = ChangeNotifierProvider<ThemeController>(
 class ThemeController extends ChangeNotifier {
   // SharedPreferences用のキー文字列
   final String _keyIsDark = 'isDark';
-  final String _keyMainColor = 'mainColor';
+  // final String _keyMainColor = 'mainColor';
 
   // ダークモード関連
   ThemeMode mode = ThemeMode.light;

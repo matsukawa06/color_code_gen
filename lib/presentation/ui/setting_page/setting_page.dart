@@ -37,7 +37,7 @@ class SettingPage extends StatelessWidget {
             } else if (!snapshot.hasData) {
               return const Text('Loading...');
             }
-            final data = snapshot.data!;
+            // final data = snapshot.data!;
             return Column(
               children: [
                 // App設定
