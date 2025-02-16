@@ -1,3 +1,5 @@
+import 'package:color_code_gen/presentation/controller/theme_controller.dart';
+import 'package:color_code_gen/presentation/ui/color_picker.dart';
 import 'package:color_code_gen/presentation/ui/home_page/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,13 +25,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomePage(),
+    final controller = CircleColorPickerController();
+    return Consumer(
+      builder: (context, ref, _) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            // colorScheme: _controller.color,
+            brightness: Brightness.light,
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: controller.color,
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
+          ),
+          themeMode: ref.watch(themeController).mode,
+          debugShowCheckedModeBanner: false, // ← シミュレータのdebugバーを非表示にする
+          home: const HomePage(),
+        );
+      },
     );
   }
 }

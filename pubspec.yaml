@@ -30,7 +30,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_riverpod: ^1.0.3
+  flutter_hooks: ^0.20.5
+  flutter_riverpod: ^2.6.1
+  in_app_review: ^2.0.6
+  package_info_plus: ^8.2.1
+  path:
+  shared_preferences: ^2.0.6
+  sqflite:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -46,7 +52,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
