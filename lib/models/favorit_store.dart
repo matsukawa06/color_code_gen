@@ -16,7 +16,7 @@ class FavoritStore {
       'id': id,
       'colorCode': colorCode,
       'title': title,
-      'sotrNo': sortNo,
+      'sortNo': sortNo,
     };
   }
 }

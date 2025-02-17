@@ -1,3 +1,4 @@
+import 'package:color_code_gen/common/common_const.dart';
 import 'package:color_code_gen/models/favorit_store.dart';
 import 'package:color_code_gen/presentation/controller/favorit_controller.dart';
 import 'package:flutter/material.dart';
@@ -21,9 +22,10 @@ class FavoritPage extends StatelessWidget {
   // AppBar部
   //------------------------------
   AppBar _appBar(BuildContext context) {
+    final pageTitle = TabItem.setting.title;
     return AppBar(
       elevation: 0.0,
-      title: const Text('お気に入り'),
+      title: Text(pageTitle),
     );
   }
 }
@@ -81,9 +83,8 @@ class _Content extends ConsumerWidget {
   ///
   /// お気に入りのリスト
   ///
-  Widget _listRowWidget(
-      BuildContext context, WidgetRef ref, FavoritStore store) {
-    final size = MediaQuery.of(context).size;
+  Widget _listRowWidget(BuildContext context, WidgetRef ref, FavoritStore store) {
+    // final size = MediaQuery.of(context).size;
     return Container(
       margin: const EdgeInsets.only(left: 12, right: 12, top: 1, bottom: 1),
       child: SizedBox(

@@ -1,7 +1,7 @@
 import 'package:color_code_gen/data/database.dart';
 import 'package:color_code_gen/models/favorit_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sqflite/sqlite_api.dart';
+import 'package:sqflite/sqflite.dart';
 
 const String _tableName = 'favorit';
 
@@ -76,5 +76,17 @@ class FavoritRepository {
       where: 'colorCode=?',
       whereArgs: [colorCode],
     );
+  }
+
+  ///
+  /// favoritテーブルの件数を取得
+  ///
+  Future<int> getListCount() async {
+    final Database db = await MyDataBase.database;
+    var result = await db.rawQuery(
+      'SELECT COUNT(*) FROM $_tableName',
+    );
+    int? exists = Sqflite.firstIntValue(result);
+    return exists == null ? 0 : Sqflite.firstIntValue(result)!;
   }
 }

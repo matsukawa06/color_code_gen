@@ -2,6 +2,7 @@ import 'package:color_code_gen/common/common_const.dart';
 import 'package:color_code_gen/common/common_util.dart';
 import 'package:color_code_gen/presentation/controller/color_controller.dart';
 import 'package:color_code_gen/presentation/ui/color_picker.dart';
+import 'package:color_code_gen/presentation/ui/color_search/provider/color_search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -53,7 +54,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
               Stack(
                 children: [
                   // お気に入りボタン
-                  favaritIcon(),
+                  favoritIcon(),
                   // 色円指定
                   Center(
                     child: CircleColorPicker(
@@ -76,8 +77,8 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// お気に入りボタン
-  Widget favaritIcon() {
+  // お気に入りボタン
+  Widget favoritIcon() {
     return Consumer(
       builder: (context, ref, _) {
         final colorCon = ref.watch(colorController);
@@ -93,7 +94,10 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
                 ),
                 IconButton(
                   onPressed: () {
+                    // お気に入りボタンの表示を変更（ON、OFFを切り替える）
                     colorCon.changeFavorit();
+                    // お気に入りテーブルにデータ登録
+                    ref.watch(colorSearchProvider).onPressedFavoritIcon();
                   },
                   isSelected: colorCon.isFavorit,
                   selectedIcon: const Icon(Icons.favorite),
@@ -109,9 +113,9 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-//
-// カラーコード指定
-//
+  //
+  // カラーコード指定
+  //
   Widget colorCode() {
     return Consumer(
       builder: (context, ref, _) {
@@ -171,7 +175,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// RGBのテキストボックス
+  // RGBのテキストボックス
   SizedBox textBoxRgb(TextEditingController text, RGBType rgbType) {
     return SizedBox(
       width: 70,
@@ -199,7 +203,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 16進数のテキストボックス
+  // 16進数のテキストボックス
   SizedBox textBox_16() {
     return SizedBox(
       width: 110,
@@ -227,9 +231,9 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-//
-// 色直接指定
-//
+  //
+  // 色直接指定
+  //
   SizedBox colorDirect() {
     return SizedBox(
       width: 320,
@@ -261,7 +265,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 色直接指定用のContainer
+  // 色直接指定用のContainer
   Widget colorContainer(MaterialColor pColor) {
     return GestureDetector(
       onTap: () => _controller.color = pColor,
@@ -273,7 +277,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 配色表示
+  // 配色表示
   Widget colorScheme() {
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 20),
@@ -294,10 +298,10 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 配色Container同士のスペースサイズ
+  // 配色Container同士のスペースサイズ
   double schemContainerSpaceWidth = 5;
 
-// 配色の行部分
+  // 配色の行部分
   TableRow commonTableRow(
       String name1, ColorSchemeType type1, String name2, ColorSchemeType type2) {
     return TableRow(
@@ -314,7 +318,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 配色のタイトル部分
+  // 配色のタイトル部分
   Align schemeTitle(ColorSchemeType type1, String name1) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -335,7 +339,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 実際の配色を表示する部分
+  // 実際の配色を表示する部分
   Widget schemeColor(ColorSchemeType type1) {
     return SizedBox(
       height: 48,
@@ -357,7 +361,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-// 配色用の共通Container
+  // 配色用の共通Container
   Container colorSchemContainer(Color pColor) {
     return Container(
       width: 30,
@@ -366,81 +370,7 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-/*
-  // 配色表示
-  Widget colorScheme() {
-    return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20),
-      child: Table(
-        border: TableBorder.all(color: Colors.orange),
-        columnWidths: const <int, TableColumnWidth>{
-          0: FlexColumnWidth(4), // 1列目の幅
-          1: FlexColumnWidth(6), // 2列目の幅
-        },
-        children: <TableRow>[
-          commonTableRow('反転色', ColorSchemType.hanten),
-          commonTableRow('補色', ColorSchemType.hoshoku),
-          commonTableRow('トライアド', ColorSchemType.triad),
-          commonTableRow('スプリット・コンプリメンタリ', ColorSchemType.split),
-          commonTableRow('類似色', ColorSchemType.ruiji),
-          commonTableRow('ヒュー・チント・シェード', ColorSchemType.hueTint),
-        ],
-      ),
-    );
-  }
-
-  // 配色Container同士のスペースサイズ
-  double schemContainerSpaceWidth = 15;
-
-  // 配色の行部分
-  TableRow commonTableRow(String name, ColorSchemType type) {
-    return TableRow(
-      children: <Widget>[
-        SizedBox(
-          height: 100,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              onPressed: () {
-                // 配色のタイプの説明ダイアログを表示
-                colorSchemTypeExplanation(type);
-              },
-              child: Text(
-                name,
-                style: const TextStyle(
-                  // fontSize: 20,
-                  color: Colors.blue,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.blue,
-                ),
-              ),
-            ),
-          ),
-        ),
-        // 実際の配色を表示する部分
-        SizedBox(
-          height: 100,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Row(
-                children: [
-                  // 選択中の色
-                  colorSchemContainer(_controller.color),
-                  SizedBox(width: schemContainerSpaceWidth),
-                  // 選択中の色に対する配色
-                  colorSchemRow(type),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-*/
-// 配色のタイプの説明ダイアログを表示
+  // 配色のタイプの説明ダイアログを表示
   Future<dynamic> colorSchemTypeExplanation(ColorSchemeType type) {
     String title = '';
     String content = '';
@@ -489,18 +419,8 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
     );
   }
 
-/*
-  // 配色用の共通Container
-  Container colorSchemContainer(Color pColor) {
-    return Container(
-      width: 50,
-      height: 60,
-      decoration: BoxDecoration(color: pColor),
-    );
-  }
-*/
-// 配色をRowで作成する
-// colorSchemTypeによって、返却するContainer数が異なる
+  // 配色をRowで作成する
+  // colorSchemTypeによって、返却するContainer数が異なる
   Row colorSchemRow(ColorSchemeType type) {
     // 選択中カラーのRGB配列作成
     List<int> aryRgb = [_controller.color.red, _controller.color.green, _controller.color.blue];
