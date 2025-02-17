@@ -13,7 +13,7 @@ class FavoritPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
-      body: _body(),
+      body: Body(),
     );
   }
 
@@ -31,7 +31,9 @@ class FavoritPage extends StatelessWidget {
 //------------------------------
 // Body部
 //------------------------------
-class _body extends StatelessWidget {
+class Body extends StatelessWidget {
+  const Body({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -79,13 +81,26 @@ class _Content extends ConsumerWidget {
   ///
   /// お気に入りのリスト
   ///
-  Widget _listRowWidget(BuildContext context, WidgetRef ref, FavoritStore store) {
+  Widget _listRowWidget(
+      BuildContext context, WidgetRef ref, FavoritStore store) {
     final size = MediaQuery.of(context).size;
     return Container(
       margin: const EdgeInsets.only(left: 12, right: 12, top: 1, bottom: 1),
       child: SizedBox(
         height: 80,
-        child: Row(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // 色表示
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(color: Color(store.colorCode!)),
+            ),
+            // タイトル表示
+            Text(store.title),
+          ],
+        ),
       ),
     );
   }
