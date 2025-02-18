@@ -141,12 +141,14 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
                   ],
                   value: colorCon.colorCodeTypeSelected,
                   onChanged: (colorType) {
-                    setState(() => colorCon.changeColorCodeType(colorType as String));
+                    setState(() =>
+                        colorCon.changeColorCodeType(colorType as String));
                   },
                 ),
                 const SizedBox(width: 20),
                 Visibility(
-                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
+                  visible:
+                      colorCon.colorCodeTypeSelected == ColorCodeType.hex.name,
                   child: Row(
                     children: [
                       const Text('#', style: TextStyle(fontSize: 20)),
@@ -156,7 +158,8 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
                   ),
                 ),
                 Visibility(
-                  visible: colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
+                  visible:
+                      colorCon.colorCodeTypeSelected == ColorCodeType.rgb.name,
                   child: Row(
                     children: [
                       textBoxRgb(_controller.textR, RGBType.r),
@@ -239,7 +242,8 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
       width: 320,
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+          padding:
+              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
           child: Wrap(
             spacing: 9,
             runSpacing: 6,
@@ -290,9 +294,12 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
           3: FlexColumnWidth(3.1), // 4列目の幅
         },
         children: <TableRow>[
-          commonTableRow('反転色', ColorSchemeType.hanten, '補色', ColorSchemeType.hoshoku),
-          commonTableRow('トライアド', ColorSchemeType.triad, 'スプコン', ColorSchemeType.split),
-          commonTableRow('類似色', ColorSchemeType.ruiji, 'H.T.S', ColorSchemeType.hueTint),
+          commonTableRow(
+              '反転色', ColorSchemeType.hanten, '補色', ColorSchemeType.hoshoku),
+          commonTableRow(
+              'トライアド', ColorSchemeType.triad, 'スプコン', ColorSchemeType.split),
+          commonTableRow(
+              '類似色', ColorSchemeType.ruiji, 'H.T.S', ColorSchemeType.hueTint),
         ],
       ),
     );
@@ -302,8 +309,8 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
   double schemContainerSpaceWidth = 5;
 
   // 配色の行部分
-  TableRow commonTableRow(
-      String name1, ColorSchemeType type1, String name2, ColorSchemeType type2) {
+  TableRow commonTableRow(String name1, ColorSchemeType type1, String name2,
+      ColorSchemeType type2) {
     return TableRow(
       children: <Widget>[
         // 配色のタイトル１
@@ -380,20 +387,24 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
         break;
       case ColorSchemeType.hoshoku:
         title = '補色';
-        content = '''色相環で真向かいの位置にある色が補色です。メインカラーに対して、補色をアクセントとして使用すると人目を引く効果が期待できます。''';
+        content =
+            '''カラーホイールで真向かいの位置にある色が補色です。メインカラーに対して、補色をアクセントとして使用すると人目を引く効果が期待できます。''';
         break;
       case ColorSchemeType.triad:
         title = 'トライアド';
-        content = '''色相環で等しい距離にある３つの色の組み合わせです。バランスが良く、安定感があります。''';
+        content = '''カラーホイールで等しい距離にある３つの色の組み合わせです。バランスが良く、安定感があります。''';
         break;
       case ColorSchemeType.split:
         title = 'スプリット・コンプリメンタリ';
+        content = '''カラーホイールで真向かいの位置にある色の両隣です。''';
         break;
       case ColorSchemeType.ruiji:
         title = '類似色';
+        content = '''カラーホイールで隣り合う色の組み合わせです。''';
         break;
       case ColorSchemeType.hueTint:
         title = 'ヒュー・チント・シェード';
+        content = '''カラーホイール上の純粋ないろがヒュー、ヒューに黒を加えるとシェード、白を加えるとチントです。''';
         break;
       default:
         title = '';
@@ -423,7 +434,11 @@ class _ColorSearchPageState extends State<ColorSearchPage> {
   // colorSchemTypeによって、返却するContainer数が異なる
   Row colorSchemRow(ColorSchemeType type) {
     // 選択中カラーのRGB配列作成
-    List<int> aryRgb = [_controller.color.red, _controller.color.green, _controller.color.blue];
+    List<int> aryRgb = [
+      _controller.color.red,
+      _controller.color.green,
+      _controller.color.blue
+    ];
     switch (type) {
       case ColorSchemeType.hanten:
         //==============================
